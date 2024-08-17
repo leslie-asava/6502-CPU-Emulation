@@ -66,6 +66,11 @@ namespace LA6502.CPU
             memory.Initialize();
         }
 
+        public void RequestAdditionalCycle(ref uint32 cycles)
+        {
+            cycles++;
+        }
+
         public bool IsFlagSet(byte StatusFlags, ProcessorFlags bitPosition)
         {
             return (StatusFlags & 1 << (int)bitPosition) != 0;
@@ -214,6 +219,7 @@ namespace LA6502.CPU
             // Check if the high byte has changed, indicating a page boundary crossing
             if ((address & 0xFF00) != originalHighByte)
             {
+                RequestAdditionalCycle(ref cycles);
                 // Decrement cycles if a page boundary was crossed
                 cycles--;
             }
@@ -230,6 +236,7 @@ namespace LA6502.CPU
             // Check if the high byte has changed, indicating a page boundary crossing
             if ((address & 0xFF00) != originalHighByte)
             {
+                RequestAdditionalCycle(ref cycles);
                 // Decrement cycles if a page boundary was crossed
                 cycles--;
             }
@@ -274,6 +281,7 @@ namespace LA6502.CPU
             // Check if the high byte has changed, indicating a page boundary crossing
             if ((address & 0xFF00) != originalHighByte)
             {
+                RequestAdditionalCycle(ref cycles);
                 // Decrement cycles if a page boundary was crossed
                 cycles--;
             }
@@ -336,6 +344,50 @@ namespace LA6502.CPU
                     case (byte)Opcodes.LDA_ABS:
                         {
                             Word address = AddressAbsolute(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            A = operand;
+
+                            SetZeroAndNegativeFlags();
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDA_ABS_X:
+                        {
+                            Word address = AddressAbsoluteX(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            A = operand;
+
+                            SetZeroAndNegativeFlags();
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDA_ABS_Y:
+                        {
+                            Word address = AddressAbsoluteY(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            A = operand;
+
+                            SetZeroAndNegativeFlags();
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDA_IND_X:
+                        {
+                            Word address = AddressIndirectX(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            A = operand;
+
+                            SetZeroAndNegativeFlags();
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDA_IND_Y:
+                        {
+                            Word address = AddressIndirectY(ref cycles, memory);
                             byte operand = ReadByte(ref cycles, memory, address);
 
                             A = operand;

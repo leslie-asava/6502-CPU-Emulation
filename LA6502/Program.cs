@@ -8,11 +8,13 @@ class Program
         Memory memory = new Memory();
         CPU cpu = new CPU();
         cpu.Reset(memory);
-        memory[0xFFFC] = (byte)Opcodes.LDA_ABS;
-        memory[0xFFFD] = 0x01;
-        memory[0xFFFD] = 0x01;
-        memory[0x0001] = 0xfe;
-        //cpu.Execute(4, memory);
+        Opcodes opcode = Opcodes.LDA_ABS_X;
+        memory[0xFFFC] = (byte)opcode;
+        memory[0xFFFD] = 0xbb;
+        memory[0xFFFE] = 0xaa;
+        memory[0xaabc] = 0xfe;
+        cpu.X = 0x01;
+        cpu.Execute(Timing.OpcodeCycles[opcode], memory);
         return 0;
     }
 }
