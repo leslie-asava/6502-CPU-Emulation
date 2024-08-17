@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>_6502Tests</RootNamespace>
+    <RootNamespace>Tests</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\6502\6502.csproj" />
+    <ProjectReference Include="..\LA6502\LA6502.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,5 @@
-using _6502Core;
-using _6502Memory;
-using _6502CPU;
-using System;
+
+using LA6502.CPU;
 
 using Word = ushort;
 using uint32 = uint;

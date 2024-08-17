@@ -1,10 +1,5 @@
-﻿using _6502Core;
-using _6502CPU;
-using _6502Memory;
-
-using Word = ushort;
-using uint32 = uint;
-using int32 = int;
+﻿using LA6502.CPU;
+using LA6502.Types;
 
 class Program
 {

@@ -1,10 +1,6 @@
 ﻿using System;
 
-using Word = ushort;
-using uint32 = uint;
-using int32 = int;
-
-namespace _6502Core
+namespace LA6502.Types
 {
     public enum ProcessorFlags
     {
@@ -17,7 +13,7 @@ namespace _6502Core
         N = 7,      // Negative Flag
     }
 
-    enum Opcodes : Byte
+    enum Opcodes : byte
     {
         LDA_IM = 0xA9,
         LDA_ZP = 0xA5,

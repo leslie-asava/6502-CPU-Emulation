@@ -1,20 +1,53 @@
-﻿using _6502Core;
-using _6502Memory;
+﻿using LA6502.Types;
 
 using Word = ushort;
 using uint32 = uint;
 using int32 = int;
 
-namespace _6502CPU
+namespace LA6502.CPU
 {
+    public struct Memory
+    {
+        const uint32 MAX_MEMORY = 1024 * 64;
+        public readonly Byte[] Data;
+
+        public Memory()
+        {
+            Data = new Byte[MAX_MEMORY];
+        }
+
+        public byte this[uint32 address]
+        {
+            get
+            {
+                if (address < 0 || address >= MAX_MEMORY)
+                    throw new IndexOutOfRangeException("Index out of range.");
+                return Data[address];
+            }
+            set
+            {
+                if (address < 0 || address >= MAX_MEMORY)
+                    throw new IndexOutOfRangeException("Index out of range.");
+                Data[address] = value;
+            }
+        }
+
+        public void Initialize()
+        {
+            for (uint32 i = 0; i < MAX_MEMORY; i++)
+            {
+                Data[i] = 0;
+            }
+        }
+    }
     public struct CPU
     {
         public Word PC;            // 16-bit Program Counter register
-        public Byte SP;            // 8-bit Stack Pointer register
-        public Byte A;             // 8-bit Accumulator register
-        public Byte X;             // Index register X
-        public Byte Y;             // Index register Y
-        public Byte StatusFlags;   // Processor flags
+        public byte SP;            // 8-bit Stack Pointer register
+        public byte A;             // 8-bit Accumulator register
+        public byte X;             // Index register X
+        public byte Y;             // Index register Y
+        public byte StatusFlags;   // Processor flags
 
         public void Reset(Memory memory)
         {
@@ -28,27 +61,27 @@ namespace _6502CPU
             memory.Initialize();
         }
 
-        public bool IsFlagSet(Byte StatusFlags, ProcessorFlags bitPosition)
+        public bool IsFlagSet(byte StatusFlags, ProcessorFlags bitPosition)
         {
-            return (StatusFlags & (1 << (int)bitPosition)) != 0;
+            return (StatusFlags & 1 << (int)bitPosition) != 0;
         }
 
-        public bool IsBitSet(Byte Register, int bitPosition)
+        public bool IsBitSet(byte Register, int bitPosition)
         {
-            return (StatusFlags & (1 << bitPosition)) != 0;
+            return (StatusFlags & 1 << bitPosition) != 0;
         }
 
-        public void SetFlag(Byte StatusFlags, ProcessorFlags bitPosition)
+        public void SetFlag(byte StatusFlags, ProcessorFlags bitPosition)
         {
             StatusFlags |= (byte)(1 << (int)bitPosition);
         }
 
-        public void ClearFlag(Byte StatusFlags, ProcessorFlags bitPosition)
+        public void ClearFlag(byte StatusFlags, ProcessorFlags bitPosition)
         {
             StatusFlags &= (byte)~(1 << (int)bitPosition);
         }
 
-        public void ToggleFlag(Byte StatusFlags, ProcessorFlags bitPosition)
+        public void ToggleFlag(byte StatusFlags, ProcessorFlags bitPosition)
         {
             StatusFlags ^= (byte)(1 << (int)bitPosition);
         }
@@ -86,9 +119,9 @@ namespace _6502CPU
             }
         }
 
-        public Byte FetchByte(ref uint32 cycles, Memory memory)
+        public byte FetchByte(ref uint32 cycles, Memory memory)
         {
-            Byte Data = memory[PC];
+            byte Data = memory[PC];
             PC++;
             cycles--;
 
@@ -97,21 +130,21 @@ namespace _6502CPU
 
         public Word FetchWord(ref uint32 cycles, Memory memory)
         {
-            Byte lowByte = memory[PC];
+            byte lowByte = memory[PC];
             PC++;
 
-            Byte highByte = memory[PC];
+            byte highByte = memory[PC];
             PC++;
 
             cycles -= 2;
 
-            Word Data = (Word)((highByte << 8) | lowByte);
+            Word Data = (Word)(highByte << 8 | lowByte);
             return Data;
         }
 
-        public Byte ReadByte(ref uint32 cycles, Memory memory, Word Address)
+        public byte ReadByte(ref uint32 cycles, Memory memory, Word Address)
         {
-            Byte Data = memory[Address];
+            byte Data = memory[Address];
             cycles--;
 
             return Data;
@@ -119,31 +152,31 @@ namespace _6502CPU
 
         public Word ReadWord(ref uint32 cycles, Memory memory, Word address)
         {
-            Byte lowByte = memory[address];
+            byte lowByte = memory[address];
             address++;
-            Byte highByte = memory[address];
+            byte highByte = memory[address];
 
             cycles -= 2;
 
-            Word Data = (Word)((highByte << 8) | lowByte);
+            Word Data = (Word)(highByte << 8 | lowByte);
             return Data;
         }
 
-        public void WriteByte(ref uint32 cycles, Memory memory, Word Address, Byte Data)
+        public void WriteByte(ref uint32 cycles, Memory memory, Word Address, byte Data)
         {
             memory[Address] = Data;
             cycles--;
         }
 
-        public Byte AddressZeroPage(ref uint32 cycles, Memory memory)
+        public byte AddressZeroPage(ref uint32 cycles, Memory memory)
         {
-            Byte zeroPageAddress = FetchByte(ref cycles, memory);
+            byte zeroPageAddress = FetchByte(ref cycles, memory);
             return zeroPageAddress;
         }
 
-        public Byte AddressZeroPageX(ref uint32 cycles, Memory memory)
+        public byte AddressZeroPageX(ref uint32 cycles, Memory memory)
         {
-            Byte zeroPageAddress = FetchByte(ref cycles, memory);
+            byte zeroPageAddress = FetchByte(ref cycles, memory);
             zeroPageAddress = (byte)(zeroPageAddress + X);
 
             cycles--;
@@ -151,9 +184,9 @@ namespace _6502CPU
             return zeroPageAddress;
         }
 
-        public Byte AddressZeroPageY(ref uint32 cycles, Memory memory)
+        public byte AddressZeroPageY(ref uint32 cycles, Memory memory)
         {
-            Byte zeroPageAddress = FetchByte(ref cycles, memory);
+            byte zeroPageAddress = FetchByte(ref cycles, memory);
             zeroPageAddress = (byte)(zeroPageAddress + Y);
 
             cycles--;
@@ -247,13 +280,13 @@ namespace _6502CPU
         {
             while (cycles > 0)
             {
-                Byte instruction = FetchByte(ref cycles, memory);
+                byte instruction = FetchByte(ref cycles, memory);
 
                 switch (instruction)
                 {
                     case (byte)Opcodes.LDA_IM:
                         {
-                            Byte operand = FetchByte(ref cycles, memory);
+                            byte operand = FetchByte(ref cycles, memory);
                             A = operand;
 
                             SetZeroAndNegativeFlags();
@@ -262,8 +295,8 @@ namespace _6502CPU
 
                     case (byte)Opcodes.LDA_ZP:
                         {
-                            Byte address = AddressZeroPage(ref cycles, memory);
-                            Byte operand = ReadByte(ref cycles, memory, address);
+                            byte address = AddressZeroPage(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
 
                             A = operand;
 
@@ -274,8 +307,8 @@ namespace _6502CPU
                     case (byte)Opcodes.LDA_ZP_X:
                         {
 
-                            Byte address = AddressZeroPageX(ref cycles, memory);
-                            Byte operand = ReadByte(ref cycles, memory, address);
+                            byte address = AddressZeroPageX(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
 
                             A = operand;
 
@@ -286,7 +319,7 @@ namespace _6502CPU
                     case (byte)Opcodes.LDA_ABS:
                         {
                             Word address = AddressAbsolute(ref cycles, memory);
-                            Byte operand = ReadByte(ref cycles, memory, address);
+                            byte operand = ReadByte(ref cycles, memory, address);
 
                             A = operand;
 
