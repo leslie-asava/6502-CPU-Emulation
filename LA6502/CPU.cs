@@ -6,6 +6,7 @@ using int32 = int;
 
 namespace LA6502.CPU
 {
+    // Emulate 6502 memory
     public struct Memory
     {
         const uint32 MAX_MEMORY = 1024 * 64;
@@ -16,6 +17,7 @@ namespace LA6502.CPU
             Data = new Byte[MAX_MEMORY];
         }
 
+        // Allow reading from and writing to memory
         public byte this[uint32 address]
         {
             get
@@ -32,6 +34,7 @@ namespace LA6502.CPU
             }
         }
 
+        // Initialize Memory with 0s
         public void Initialize()
         {
             for (uint32 i = 0; i < MAX_MEMORY; i++)
@@ -40,6 +43,8 @@ namespace LA6502.CPU
             }
         }
     }
+
+    // Emulate 6502 CPU registers and functioning
     public struct CPU
     {
         public Word PC;            // 16-bit Program Counter register
@@ -264,7 +269,7 @@ namespace LA6502.CPU
             Word address = ReadWord(ref cycles, memory, zeroPageAddress);
 
             Word originalHighByte = (Word)(address & 0xFF00);
-            address = (byte)(address + Y);
+            address = (Word)(address + Y);
 
             // Check if the high byte has changed, indicating a page boundary crossing
             if ((address & 0xFF00) != originalHighByte)
@@ -272,6 +277,18 @@ namespace LA6502.CPU
                 // Decrement cycles if a page boundary was crossed
                 cycles--;
             }
+
+            return address;
+        }
+
+        public Word AddressRelative(ref uint32 cycles, Memory memory)
+        {
+            Byte offset = FetchByte(ref cycles, memory);
+
+            var e = (sbyte)offset;
+            Word address = (Word)(PC + (sbyte)offset);
+
+            cycles--;
 
             return address;
         }
