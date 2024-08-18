@@ -15,6 +15,7 @@ namespace LA6502.Types
 
     public enum Opcodes : byte
     {
+        // Load Accumulator
         LDA_IM = 0xA9,
         LDA_ZP = 0xA5,
         LDA_ZP_X = 0xB5,
@@ -23,6 +24,13 @@ namespace LA6502.Types
         LDA_ABS_Y = 0xB9,
         LDA_IND_X = 0xA1,
         LDA_IND_Y = 0xB1,
+
+        // Load X Register
+        LDX_IM = 0xA2,
+        LDX_ZP = 0xA6,
+        LDX_ZP_Y = 0xB6,
+        LDX_ABS = 0xAE,
+        LDX_ABS_Y = 0xBE,
     }
 
     enum Instructions
@@ -43,6 +51,12 @@ namespace LA6502.Types
             { Opcodes.LDA_ABS_Y, 4 },   // LDA Absolute, Y (add 1 cycle if page boundary crossed)
             { Opcodes.LDA_IND_X, 6 },   // LDA Indirect, X
             { Opcodes.LDA_IND_Y, 5 },   // LDA Indirect, Y (add 1 cycle if page boundary crossed)
+
+            { Opcodes.LDX_IM, 2 },      // LDX Immediate
+            { Opcodes.LDX_ZP, 3 },      // LDX Zero Page
+            { Opcodes.LDX_ZP_Y, 4 },    // LDX Zero Page, Y
+            { Opcodes.LDX_ABS, 4 },     // LDX Absolute
+            { Opcodes.LDX_ABS_Y, 4 },   // LDX Absolute, Y (add 1 cycle if page boundary crossed)
         };
     }
 }

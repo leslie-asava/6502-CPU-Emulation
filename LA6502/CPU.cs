@@ -116,14 +116,14 @@ namespace LA6502.CPU
             }
         }
 
-        void SetZeroAndNegativeFlags()
+        void SetZeroAndNegativeFlags(Byte register)
         {
-            if (A == 0)
+            if (register == 0)
             {
                 SetFlag(StatusFlags, ProcessorFlags.Z);
             }
 
-            if (IsBitSet(A, 7))
+            if (IsBitSet(register, 7))
             {
                 SetFlag(StatusFlags, ProcessorFlags.N);
             }
@@ -309,12 +309,13 @@ namespace LA6502.CPU
 
                 switch (instruction)
                 {
+                    // Load Accumulator
                     case (byte)Opcodes.LDA_IM:
                         {
                             byte operand = FetchByte(ref cycles, memory);
                             A = operand;
 
-                            SetZeroAndNegativeFlags();
+                            SetZeroAndNegativeFlags(A);
                         }
                         break;
 
@@ -325,7 +326,7 @@ namespace LA6502.CPU
 
                             A = operand;
 
-                            SetZeroAndNegativeFlags();
+                            SetZeroAndNegativeFlags(A);
                         }
                         break;
 
@@ -337,7 +338,7 @@ namespace LA6502.CPU
 
                             A = operand;
 
-                            SetZeroAndNegativeFlags();
+                            SetZeroAndNegativeFlags(A);
                         }
                         break;
 
@@ -348,7 +349,7 @@ namespace LA6502.CPU
 
                             A = operand;
 
-                            SetZeroAndNegativeFlags();
+                            SetZeroAndNegativeFlags(A);
                         }
                         break;
 
@@ -359,7 +360,7 @@ namespace LA6502.CPU
 
                             A = operand;
 
-                            SetZeroAndNegativeFlags();
+                            SetZeroAndNegativeFlags(A);
                         }
                         break;
 
@@ -370,7 +371,7 @@ namespace LA6502.CPU
 
                             A = operand;
 
-                            SetZeroAndNegativeFlags();
+                            SetZeroAndNegativeFlags(A);
                         }
                         break;
 
@@ -381,7 +382,7 @@ namespace LA6502.CPU
 
                             A = operand;
 
-                            SetZeroAndNegativeFlags();
+                            SetZeroAndNegativeFlags(A);
                         }
                         break;
 
@@ -392,7 +393,62 @@ namespace LA6502.CPU
 
                             A = operand;
 
-                            SetZeroAndNegativeFlags();
+                            SetZeroAndNegativeFlags(A);
+                        }
+                        break;
+
+                    // Load X Register
+                    case (byte)Opcodes.LDX_IM:
+                        {
+                            byte operand = FetchByte(ref cycles, memory);
+                            X = operand;
+
+                            SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDX_ZP:
+                        {
+                            byte address = AddressZeroPage(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            X = operand;
+
+                            SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDX_ZP_Y:
+                        {
+
+                            byte address = AddressZeroPageY(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            X = operand;
+
+                            SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDX_ABS:
+                        {
+                            Word address = AddressAbsolute(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            X = operand;
+
+                            SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDX_ABS_Y:
+                        {
+                            Word address = AddressAbsoluteY(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            X = operand;
+
+                            SetZeroAndNegativeFlags(Y);
                         }
                         break;
 

@@ -1,10 +1,10 @@
 
 using LA6502.CPU;
+using LA6502.Types;
 
 using Word = ushort;
 using uint32 = uint;
 using int32 = int;
-using LA6502.Types;
 
 namespace CPUTests
 {
@@ -33,8 +33,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
-            //Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
-            //Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.False, "Zero flag should not be set.");
+
+            if (cpu.A == 0x00) 
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -49,8 +56,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
-            //Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
-            //Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.False, "Zero flag should not be set.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -65,8 +79,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
-            //Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
-            //Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.False, "Zero flag should not be set.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -81,8 +102,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
-            //Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
-            //Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.False, "Zero flag should not be set.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -94,6 +122,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -106,6 +143,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -119,6 +165,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -134,6 +189,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -149,6 +213,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
         [Test]
@@ -164,6 +237,15 @@ namespace CPUTests
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.A, Is.EqualTo(0xFE), "Accumulator should be loaded with 0xFE.");
+
+            if (cpu.A == 0x00)
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
+            }
+            if (cpu.IsBitSet(cpu.A, 7))
+            {
+                Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
+            }
         }
 
 
