@@ -6,44 +6,6 @@ using int32 = int;
 
 namespace LA6502.CPU
 {
-    // Emulate 6502 memory
-    public struct Memory
-    {
-        const uint32 MAX_MEMORY = 1024 * 64;
-        public readonly Byte[] Data;
-
-        public Memory()
-        {
-            Data = new Byte[MAX_MEMORY];
-        }
-
-        // Allow reading from and writing to memory
-        public byte this[uint32 address]
-        {
-            get
-            {
-                if (address < 0 || address >= MAX_MEMORY)
-                    throw new IndexOutOfRangeException("Index out of range.");
-                return Data[address];
-            }
-            set
-            {
-                if (address < 0 || address >= MAX_MEMORY)
-                    throw new IndexOutOfRangeException("Index out of range.");
-                Data[address] = value;
-            }
-        }
-
-        // Initialize Memory with 0s
-        public void Initialize()
-        {
-            for (uint32 i = 0; i < MAX_MEMORY; i++)
-            {
-                Data[i] = 0;
-            }
-        }
-    }
-
     // Emulate 6502 CPU registers and functioning
     public struct CPU
     {
@@ -54,6 +16,7 @@ namespace LA6502.CPU
         public byte Y;             // Index register Y
         public byte StatusFlags;   // Processor flags
 
+        // Reset the CPU e.g when powered on
         public void Reset(Memory memory)
         {
             PC = 0xFFFC;
@@ -66,56 +29,56 @@ namespace LA6502.CPU
             memory.Initialize();
         }
 
+        // Request an aditional Clock Cycle e.g., when the Page Boundary is crossed
         public void RequestAdditionalCycle(ref uint32 cycles)
         {
             cycles++;
         }
 
+        // Check if a Processor Status flag is set
         public bool IsFlagSet(byte StatusFlags, ProcessorFlags bitPosition)
         {
             return (StatusFlags & 1 << (int)bitPosition) != 0;
         }
 
+        // Check if a bit in a register is set
         public bool IsBitSet(byte Register, int bitPosition)
         {
             return (StatusFlags & 1 << bitPosition) != 0;
         }
 
+        // Set a Processor Status flag
         public void SetFlag(byte StatusFlags, ProcessorFlags bitPosition)
         {
             StatusFlags |= (byte)(1 << (int)bitPosition);
         }
 
+        // Clear a Processor Status flag
         public void ClearFlag(byte StatusFlags, ProcessorFlags bitPosition)
         {
             StatusFlags &= (byte)~(1 << (int)bitPosition);
         }
 
+        // Toggle a Processor Status flag
         public void ToggleFlag(byte StatusFlags, ProcessorFlags bitPosition)
         {
             StatusFlags ^= (byte)(1 << (int)bitPosition);
         }
 
+        // Set Processor Status flags that are common for all addressing modes of an Instructions
         void SetStatus(Instructions instruction)
         {
             switch (instruction)
             {
                 case Instructions.LDA:
                     {
-                        if (A == 0)
-                        {
-                            SetFlag(StatusFlags, ProcessorFlags.Z);
-                        }
-
-                        if (IsBitSet(A, 7))
-                        {
-                            SetFlag(StatusFlags, ProcessorFlags.N);
-                        }
+                        
                     }
                     break;
             }
         }
 
+        // Set the Zero and Negative flags appropriately
         void SetZeroAndNegativeFlags(Byte register)
         {
             if (register == 0)
@@ -129,6 +92,7 @@ namespace LA6502.CPU
             }
         }
 
+        // Fetch the next Byte at the Program Counter
         public byte FetchByte(ref uint32 cycles, Memory memory)
         {
             byte Data = memory[PC];
@@ -138,6 +102,7 @@ namespace LA6502.CPU
             return Data;
         }
 
+        // Fetch the next two Bytes at the Program Counter
         public Word FetchWord(ref uint32 cycles, Memory memory)
         {
             byte lowByte = memory[PC];
@@ -152,6 +117,7 @@ namespace LA6502.CPU
             return Data;
         }
 
+        // Read a Byte from a memory adress, does not advance the Program Counter
         public byte ReadByte(ref uint32 cycles, Memory memory, Word Address)
         {
             byte Data = memory[Address];
@@ -160,6 +126,7 @@ namespace LA6502.CPU
             return Data;
         }
 
+        // Read the next two Bytes from a memory address, does not advance the Program Counter
         public Word ReadWord(ref uint32 cycles, Memory memory, Word address)
         {
             byte lowByte = memory[address];
@@ -172,18 +139,21 @@ namespace LA6502.CPU
             return Data;
         }
 
+        // Write a Byte to a memory address
         public void WriteByte(ref uint32 cycles, Memory memory, Word Address, byte Data)
         {
             memory[Address] = Data;
             cycles--;
         }
 
+        // Zero Page Adressing Mode
         public byte AddressZeroPage(ref uint32 cycles, Memory memory)
         {
             byte zeroPageAddress = FetchByte(ref cycles, memory);
             return zeroPageAddress;
         }
 
+        // X Indexed,Zero Page Addressing Mode
         public byte AddressZeroPageX(ref uint32 cycles, Memory memory)
         {
             byte zeroPageAddress = FetchByte(ref cycles, memory);
@@ -194,6 +164,7 @@ namespace LA6502.CPU
             return zeroPageAddress;
         }
 
+        // Y Indexed,Zero Page Addressing Mode
         public byte AddressZeroPageY(ref uint32 cycles, Memory memory)
         {
             byte zeroPageAddress = FetchByte(ref cycles, memory);
@@ -204,12 +175,14 @@ namespace LA6502.CPU
             return zeroPageAddress;
         }
 
+        // Absolute Addressing Mode
         public Word AddressAbsolute(ref uint32 cycles, Memory memory)
         {
             Word address = FetchWord(ref cycles, memory);
             return address;
         }
 
+        // X Indexed, Absolute Addressing Mode
         public Word AddressAbsoluteX(ref uint32 cycles, Memory memory)
         {
             Word address = FetchWord(ref cycles, memory);
@@ -227,6 +200,7 @@ namespace LA6502.CPU
             return address;
         }
 
+        // Y Indexed, Absolute Addressing Mode
         public Word AddressAbsoluteY(ref uint32 cycles, Memory memory)
         {
             Word address = FetchWord(ref cycles, memory);
@@ -244,6 +218,7 @@ namespace LA6502.CPU
             return address;
         }
 
+        // Indirect Addressing Mode
         public Word AddressIndirect(ref uint32 cycles, Memory memory)
         {
             // The address in the instruction points to another address
@@ -255,6 +230,7 @@ namespace LA6502.CPU
             return address;
         }
 
+        // Indexed Indirect, X Addressing Mode
         public Word AddressIndirectX(ref uint32 cycles, Memory memory)
         {
             // The address in the instruction points to another address
@@ -269,6 +245,7 @@ namespace LA6502.CPU
             return address;
         }
 
+        // Indirect Indexed,Y Addressing Mode
         public Word AddressIndirectY(ref uint32 cycles, Memory memory)
         {
             // The address in the instruction points to another address
@@ -289,6 +266,7 @@ namespace LA6502.CPU
             return address;
         }
 
+        // Relative Addressing Mode
         public Word AddressRelative(ref uint32 cycles, Memory memory)
         {
             Byte offset = FetchByte(ref cycles, memory);
@@ -301,6 +279,7 @@ namespace LA6502.CPU
             return address;
         }
 
+        // Execute instructions in memory for a number of clock cycles
         public void Execute(uint32 cycles, Memory memory)
         {
             while (cycles > 0)
@@ -458,6 +437,43 @@ namespace LA6502.CPU
                         }
                 }
 
+            }
+        }
+    }
+    // Emulate 6502 memory
+    public struct Memory
+    {
+        const uint32 MAX_MEMORY = 1024 * 64;
+        public readonly Byte[] Data;
+
+        public Memory()
+        {
+            Data = new Byte[MAX_MEMORY];
+        }
+
+        // Allow reading from and writing to memory
+        public byte this[uint32 address]
+        {
+            get
+            {
+                if (address < 0 || address >= MAX_MEMORY)
+                    throw new IndexOutOfRangeException("Index out of range.");
+                return Data[address];
+            }
+            set
+            {
+                if (address < 0 || address >= MAX_MEMORY)
+                    throw new IndexOutOfRangeException("Index out of range.");
+                Data[address] = value;
+            }
+        }
+
+        // Initialize Memory with 0s
+        public void Initialize()
+        {
+            for (uint32 i = 0; i < MAX_MEMORY; i++)
+            {
+                Data[i] = 0;
             }
         }
     }
