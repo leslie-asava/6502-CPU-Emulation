@@ -427,6 +427,61 @@ namespace LA6502.CPU
 
                             X = operand;
 
+                            SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    // Load Y Register
+                    case (byte)Opcodes.LDY_IM:
+                        {
+                            byte operand = FetchByte(ref cycles, memory);
+                            Y = operand;
+
+                            SetZeroAndNegativeFlags(Y);
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDY_ZP:
+                        {
+                            byte address = AddressZeroPage(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            Y = operand;
+
+                            SetZeroAndNegativeFlags(Y);
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDY_ZP_X:
+                        {
+
+                            byte address = AddressZeroPageX(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            Y = operand;
+
+                            SetZeroAndNegativeFlags(Y);
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDY_ABS:
+                        {
+                            Word address = AddressAbsolute(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            Y = operand;
+
+                            SetZeroAndNegativeFlags(Y);
+                        }
+                        break;
+
+                    case (byte)Opcodes.LDY_ABS_X:
+                        {
+                            Word address = AddressAbsoluteX(ref cycles, memory);
+                            byte operand = ReadByte(ref cycles, memory, address);
+
+                            Y = operand;
+
                             SetZeroAndNegativeFlags(Y);
                         }
                         break;
@@ -440,6 +495,7 @@ namespace LA6502.CPU
             }
         }
     }
+
     // Emulate 6502 memory
     public struct Memory
     {

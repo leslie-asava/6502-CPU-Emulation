@@ -3,7 +3,8 @@ using LA6502.Types;
 
 namespace CPUTests
 {
-    public class InstructionTests_LDX
+    [TestFixture]
+    public class InstructionTests_LDY
     {
         private Memory memory;
         private CPU cpu;
@@ -17,131 +18,131 @@ namespace CPUTests
         }
 
         [Test]
-        public void LDX_Immediate()
+        public void LDY_Immediate()
         {
-            Opcodes opcode = Opcodes.LDX_IM;
+            Opcodes opcode = Opcodes.LDY_IM;
             memory[0xFFFC] = (byte)opcode;
             memory[0xFFFD] = 0xFE;
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
-            Assert.That(cpu.X, Is.EqualTo(0xFE), "X register should be loaded with 0xFE.");
+            Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
-            if (cpu.X == 0x00)
+            if (cpu.Y == 0x00)
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
             }
-            if (cpu.IsBitSet(cpu.X, 7))
+            if (cpu.IsBitSet(cpu.Y, 7))
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
             }
         }
 
         [Test]
-        public void LDX_ZeroPage()
+        public void LDY_ZeroPage()
         {
-            Opcodes opcode = Opcodes.LDX_ZP;
+            Opcodes opcode = Opcodes.LDY_ZP;
             memory[0xFFFC] = (byte)opcode;
             memory[0xFFFD] = 0x42;
             memory[0x0042] = 0xFE;
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
-            Assert.That(cpu.X, Is.EqualTo(0xFE), "X register should be loaded with 0xFE.");
+            Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
-            if (cpu.X == 0x00)
+            if (cpu.Y == 0x00)
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
             }
-            if (cpu.IsBitSet(cpu.X, 7))
+            if (cpu.IsBitSet(cpu.Y, 7))
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
             }
         }
 
         [Test]
-        public void LDX_ZeroPageY()
+        public void LDY_ZeroPageX()
         {
-            Opcodes opcode = Opcodes.LDX_ZP_Y;
+            Opcodes opcode = Opcodes.LDY_ZP_X;
             memory[0xFFFC] = (byte)opcode;
             memory[0xFFFD] = 0x42;
             memory[0x0043] = 0xFE;
-            cpu.Y = 0x01;
+            cpu.X = 0x01;
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
-            Assert.That(cpu.X, Is.EqualTo(0xFE), "X register should be loaded with 0xFE.");
+            Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
-            if (cpu.X == 0x00)
+            if (cpu.Y == 0x00)
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
             }
-            if (cpu.IsBitSet(cpu.X, 7))
+            if (cpu.IsBitSet(cpu.Y, 7))
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
             }
         }
 
         [Test]
-        public void LDX_Absolute()
+        public void LDY_Absolute()
         {
-            Opcodes opcode = Opcodes.LDX_ABS;
+            Opcodes opcode = Opcodes.LDY_ABS;
             memory[0xFFFC] = (byte)opcode;
             memory[0xFFFD] = 0x00;
             memory[0xFFFE] = 0x80;
             memory[0x8000] = 0xFE;
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
-            Assert.That(cpu.X, Is.EqualTo(0xFE), "X register should be loaded with 0xFE.");
+            Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
-            if (cpu.X == 0x00)
+            if (cpu.Y == 0x00)
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
             }
-            if (cpu.IsBitSet(cpu.X, 7))
+            if (cpu.IsBitSet(cpu.Y, 7))
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
             }
         }
 
         [Test]
-        public void LDX_AbsoluteY_NoPageBoundaryCross()
+        public void LDY_AbsoluteX_NoPageBoundaryCross()
         {
-            Opcodes opcode = Opcodes.LDX_ABS_Y;
+            Opcodes opcode = Opcodes.LDY_ABS_X;
             memory[0xFFFC] = (byte)opcode;
             memory[0xFFFD] = 0xBB;
             memory[0xFFFE] = 0xAA;
             memory[0xAABC] = 0xFE;
-            cpu.Y = 0x01;
+            cpu.X = 0x01;
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
-            Assert.That(cpu.X, Is.EqualTo(0xFE), "X register should be loaded with 0xFE.");
+            Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
-            if (cpu.X == 0x00)
+            if (cpu.Y == 0x00)
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
             }
-            if (cpu.IsBitSet(cpu.X, 7))
+            if (cpu.IsBitSet(cpu.Y, 7))
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
             }
         }
 
         [Test]
-        public void LDX_AbsoluteY_PageBoundaryCross()
+        public void LDY_AbsoluteX_PageBoundaryCross()
         {
-            Opcodes opcode = Opcodes.LDX_ABS_Y;
+            Opcodes opcode = Opcodes.LDY_ABS_X;
             memory[0xFFFC] = (byte)opcode;
             memory[0xFFFD] = 0xFF;
             memory[0xFFFE] = 0xAA;
             memory[0xAB00] = 0xFE;
-            cpu.Y = 0x01;
+            cpu.X = 0x01;
             cpu.Execute(Timing.OpcodeCycles[opcode], memory);
 
-            Assert.That(cpu.X, Is.EqualTo(0xFE), "X register should be loaded with 0xFE.");
+            Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
-            if (cpu.X == 0x00)
+            if (cpu.Y == 0x00)
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.Z), Is.True, "Zero flag should be set.");
             }
-            if (cpu.IsBitSet(cpu.X, 7))
+            if (cpu.IsBitSet(cpu.Y, 7))
             {
                 Assert.That(cpu.IsFlagSet(cpu.StatusFlags, ProcessorFlags.N), Is.True, "Negative flag should be set.");
             }

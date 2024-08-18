@@ -2,10 +2,6 @@
 using LA6502.CPU;
 using LA6502.Types;
 
-using Word = ushort;
-using uint32 = uint;
-using int32 = int;
-
 namespace CPUTests
 {
     public class InstructionTests_LDA

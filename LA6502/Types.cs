@@ -31,6 +31,13 @@ namespace LA6502.Types
         LDX_ZP_Y = 0xB6,
         LDX_ABS = 0xAE,
         LDX_ABS_Y = 0xBE,
+
+        // Load Y Register
+        LDY_IM = 0xA0,
+        LDY_ZP = 0xA4,
+        LDY_ZP_X = 0xB4,
+        LDY_ABS = 0xAC,
+        LDY_ABS_X = 0xBC,
     }
 
     enum Instructions
@@ -57,6 +64,12 @@ namespace LA6502.Types
             { Opcodes.LDX_ZP_Y, 4 },    // LDX Zero Page, Y
             { Opcodes.LDX_ABS, 4 },     // LDX Absolute
             { Opcodes.LDX_ABS_Y, 4 },   // LDX Absolute, Y (add 1 cycle if page boundary crossed)
+
+            { Opcodes.LDY_IM, 2 },      // LDY Immediate
+            { Opcodes.LDY_ZP, 3 },      // LDY Zero Page
+            { Opcodes.LDY_ZP_X, 4 },    // LDY Zero Page, X
+            { Opcodes.LDY_ABS, 4 },     // LDY Absolute
+            { Opcodes.LDY_ABS_X, 4 },   // LDY Absolute, X (add 1 cycle if page boundary crossed)
         };
     }
 }
