@@ -12,9 +12,9 @@ namespace LA6502.CPU
         public Word PC;            // 16-bit Program Counter register
         public byte SP;            // 8-bit Stack Pointer register
         public byte A;             // 8-bit Accumulator register
-        public byte X;             // Index register X
-        public byte Y;             // Index register Y
-        public byte StatusFlags;   // Processor flags
+        public byte X;             // 8-bit Index register X
+        public byte Y;             // 8-bit Index register Y
+        public byte StatusFlags;   // 8-bit Processor Status register
 
         // Reset the CPU e.g when powered on
         public void Reset(Memory memory)
@@ -183,7 +183,7 @@ namespace LA6502.CPU
         }
 
         // X Indexed, Absolute Addressing Mode
-        public Word AddressAbsoluteX(ref uint32 cycles, Memory memory)
+        public Word AddressAbsoluteX(ref uint32 cycles, Memory memory, bool variableCycles = false)
         {
             Word address = FetchWord(ref cycles, memory);
             Word originalHighByte = (Word)(address & 0xFF00);
@@ -197,11 +197,17 @@ namespace LA6502.CPU
                 cycles--;
             }
 
+            // For instructions whose clock cycles don't vary
+            if (!variableCycles)
+            {
+                cycles--;
+            }
+
             return address;
         }
 
         // Y Indexed, Absolute Addressing Mode
-        public Word AddressAbsoluteY(ref uint32 cycles, Memory memory)
+        public Word AddressAbsoluteY(ref uint32 cycles, Memory memory, bool variableCycles = false)
         {
             Word address = FetchWord(ref cycles, memory);
             Word originalHighByte = (Word)(address & 0xFF00);
@@ -212,6 +218,11 @@ namespace LA6502.CPU
             {
                 RequestAdditionalCycle(ref cycles);
                 // Decrement cycles if a page boundary was crossed
+                cycles--;
+            }
+
+            if (!variableCycles)
+            {
                 cycles--;
             }
 
@@ -246,7 +257,7 @@ namespace LA6502.CPU
         }
 
         // Indirect Indexed,Y Addressing Mode
-        public Word AddressIndirectY(ref uint32 cycles, Memory memory)
+        public Word AddressIndirectY(ref uint32 cycles, Memory memory, bool variableCycles = false)
         {
             // The address in the instruction points to another address
             Word zeroPageAddress = FetchByte(ref cycles, memory);
@@ -260,6 +271,11 @@ namespace LA6502.CPU
             {
                 RequestAdditionalCycle(ref cycles);
                 // Decrement cycles if a page boundary was crossed
+                cycles--;
+            }
+
+            if (!variableCycles)
+            {
                 cycles--;
             }
 
@@ -288,7 +304,7 @@ namespace LA6502.CPU
 
                 switch (instruction)
                 {
-                    // Load Accumulator
+                    // Load Accumulator Register
                     case (byte)Opcodes.LDA_IM:
                         {
                             byte operand = FetchByte(ref cycles, memory);
@@ -334,7 +350,7 @@ namespace LA6502.CPU
 
                     case (byte)Opcodes.LDA_ABS_X:
                         {
-                            Word address = AddressAbsoluteX(ref cycles, memory);
+                            Word address = AddressAbsoluteX(ref cycles, memory, variableCycles: true);
                             byte operand = ReadByte(ref cycles, memory, address);
 
                             A = operand;
@@ -345,7 +361,7 @@ namespace LA6502.CPU
 
                     case (byte)Opcodes.LDA_ABS_Y:
                         {
-                            Word address = AddressAbsoluteY(ref cycles, memory);
+                            Word address = AddressAbsoluteY(ref cycles, memory, variableCycles: true);
                             byte operand = ReadByte(ref cycles, memory, address);
 
                             A = operand;
@@ -367,7 +383,7 @@ namespace LA6502.CPU
 
                     case (byte)Opcodes.LDA_IND_Y:
                         {
-                            Word address = AddressIndirectY(ref cycles, memory);
+                            Word address = AddressIndirectY(ref cycles, memory, variableCycles: true);
                             byte operand = ReadByte(ref cycles, memory, address);
 
                             A = operand;
@@ -422,7 +438,7 @@ namespace LA6502.CPU
 
                     case (byte)Opcodes.LDX_ABS_Y:
                         {
-                            Word address = AddressAbsoluteY(ref cycles, memory);
+                            Word address = AddressAbsoluteY(ref cycles, memory, variableCycles: true);
                             byte operand = ReadByte(ref cycles, memory, address);
 
                             X = operand;
@@ -477,12 +493,122 @@ namespace LA6502.CPU
 
                     case (byte)Opcodes.LDY_ABS_X:
                         {
-                            Word address = AddressAbsoluteX(ref cycles, memory);
+                            Word address = AddressAbsoluteX(ref cycles, memory, variableCycles: true);
                             byte operand = ReadByte(ref cycles, memory, address);
 
                             Y = operand;
 
                             SetZeroAndNegativeFlags(Y);
+                        }
+                        break;
+
+                    // Store Accumulator Register
+                    case (byte)Opcodes.STA_ZP:
+                        {
+                            byte address = AddressZeroPage(ref cycles, memory);
+                            byte data = A;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STA_ZP_X:
+                        {
+
+                            byte address = AddressZeroPageX(ref cycles, memory);
+                            byte data = A;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STA_ABS:
+                        {
+                            Word address = AddressAbsolute(ref cycles, memory);
+                            byte data = A;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STA_ABS_X:
+                        {
+                            Word address = AddressAbsoluteX(ref cycles, memory);
+                            byte data = A;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STA_ABS_Y:
+                        {
+                            Word address = AddressAbsoluteY(ref cycles, memory);
+                            byte data = A;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STA_IND_X:
+                        {
+                            Word address = AddressIndirectX(ref cycles, memory);
+                            byte data = A;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STA_IND_Y:
+                        {
+                            Word address = AddressIndirectY(ref cycles, memory);
+                            byte data = A;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    // Store X Register
+                    case (byte)Opcodes.STX_ZP:
+                        {
+                            byte address = AddressZeroPage(ref cycles, memory);
+                            byte data = X;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STX_ZP_Y:
+                        {
+
+                            byte address = AddressZeroPageY(ref cycles, memory);
+                            byte data = X;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STX_ABS:
+                        {
+                            Word address = AddressAbsolute(ref cycles, memory);
+                            byte data = X;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    // Store Y Register
+                    case (byte)Opcodes.STY_ZP:
+                        {
+                            byte address = AddressZeroPage(ref cycles, memory);
+                            byte data = Y;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STY_ZP_X:
+                        {
+
+                            byte address = AddressZeroPageX(ref cycles, memory);
+                            byte data = Y;
+                            WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    case (byte)Opcodes.STY_ABS:
+                        {
+                            Word address = AddressAbsolute(ref cycles, memory);
+                            byte data = Y;
+                            WriteByte(ref cycles, memory, address, data);
                         }
                         break;
 

@@ -14,7 +14,7 @@ class Program
         memory[0xFFFE] = 0xaa;
         memory[0xaabc] = 0xfe;
         cpu.X = 0x01;
-        cpu.Execute(Timing.OpcodeCycles[opcode], memory);
+        cpu.Execute(Clock.OpcodeCycles[opcode], memory);
         return 0;
     }
 }

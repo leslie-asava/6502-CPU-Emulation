@@ -23,7 +23,7 @@ namespace CPUTests
             Opcodes opcode = Opcodes.LDY_IM;
             memory[0xFFFC] = (byte)opcode;
             memory[0xFFFD] = 0xFE;
-            cpu.Execute(Timing.OpcodeCycles[opcode], memory);
+            cpu.Execute(Clock.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
@@ -44,7 +44,7 @@ namespace CPUTests
             memory[0xFFFC] = (byte)opcode;
             memory[0xFFFD] = 0x42;
             memory[0x0042] = 0xFE;
-            cpu.Execute(Timing.OpcodeCycles[opcode], memory);
+            cpu.Execute(Clock.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
@@ -66,7 +66,7 @@ namespace CPUTests
             memory[0xFFFD] = 0x42;
             memory[0x0043] = 0xFE;
             cpu.X = 0x01;
-            cpu.Execute(Timing.OpcodeCycles[opcode], memory);
+            cpu.Execute(Clock.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
@@ -88,7 +88,7 @@ namespace CPUTests
             memory[0xFFFD] = 0x00;
             memory[0xFFFE] = 0x80;
             memory[0x8000] = 0xFE;
-            cpu.Execute(Timing.OpcodeCycles[opcode], memory);
+            cpu.Execute(Clock.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
@@ -111,7 +111,7 @@ namespace CPUTests
             memory[0xFFFE] = 0xAA;
             memory[0xAABC] = 0xFE;
             cpu.X = 0x01;
-            cpu.Execute(Timing.OpcodeCycles[opcode], memory);
+            cpu.Execute(Clock.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
@@ -134,7 +134,7 @@ namespace CPUTests
             memory[0xFFFE] = 0xAA;
             memory[0xAB00] = 0xFE;
             cpu.X = 0x01;
-            cpu.Execute(Timing.OpcodeCycles[opcode], memory);
+            cpu.Execute(Clock.OpcodeCycles[opcode], memory);
 
             Assert.That(cpu.Y, Is.EqualTo(0xFE), "Y register should be loaded with 0xFE.");
 
