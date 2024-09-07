@@ -57,6 +57,18 @@ namespace LA6502.Types
         STY_ZP = 0x84,
         STY_ZP_X = 0x94,
         STY_ABS = 0x8C,
+
+        // Register Transfers
+        TAX = 0xAA,
+        TXA = 0x8A,
+        TAY = 0xA8,
+        TYA = 0x98,
+
+        // Stack Operations
+        TSX = 0xBA,
+        TXS = 0x9A,
+        PHA = 0x48,
+
     }
 
     enum Instructions
@@ -105,6 +117,14 @@ namespace LA6502.Types
             { Opcodes.STY_ZP, 3 },      // STY Zero Page
             { Opcodes.STY_ZP_X, 4 },    // STY Zero Page, Y
             { Opcodes.STY_ABS, 4 },     // STY Absolute
+
+            { Opcodes.TAX, 2 },         // TAX Implied
+            { Opcodes.TAY, 2 },         // TAY Implied
+            { Opcodes.TXA, 2 },         // TXA Implied
+            { Opcodes.TYA, 2 },         // TYA Implied
+            
+            { Opcodes.TSX, 2 },         // TSX Implied           
+            { Opcodes.TXS, 2 },         // TXS Implied
         };
     }
 }

@@ -29,10 +29,16 @@ namespace LA6502.CPU
             memory.Initialize();
         }
 
-        // Request an aditional Clock Cycle e.g., when the Page Boundary is crossed
-        public void RequestAdditionalCycle(ref uint32 cycles)
+        // Request an aditional clock cycle e.g., when the Page Boundary is crossed
+        public void RequestCycle(ref uint32 cycles)
         {
             cycles++;
+        }
+
+        // Use clock cycle
+        public void CycleTick(ref uint32 cycles)
+        {
+            cycles--;
         }
 
         // Check if a Processor Status flag is set
@@ -97,7 +103,8 @@ namespace LA6502.CPU
         {
             byte Data = memory[PC];
             PC++;
-            cycles--;
+
+            CycleTick(ref cycles);
 
             return Data;
         }
@@ -107,11 +114,11 @@ namespace LA6502.CPU
         {
             byte lowByte = memory[PC];
             PC++;
+            CycleTick(ref cycles);
 
             byte highByte = memory[PC];
             PC++;
-
-            cycles -= 2;
+            CycleTick(ref cycles);
 
             Word Data = (Word)(highByte << 8 | lowByte);
             return Data;
@@ -121,7 +128,8 @@ namespace LA6502.CPU
         public byte ReadByte(ref uint32 cycles, Memory memory, Word Address)
         {
             byte Data = memory[Address];
-            cycles--;
+
+            CycleTick(ref cycles);
 
             return Data;
         }
@@ -130,10 +138,13 @@ namespace LA6502.CPU
         public Word ReadWord(ref uint32 cycles, Memory memory, Word address)
         {
             byte lowByte = memory[address];
-            address++;
-            byte highByte = memory[address];
+            CycleTick(ref cycles);
 
-            cycles -= 2;
+            address++;
+
+            byte highByte = memory[address];
+            CycleTick(ref cycles);
+
 
             Word Data = (Word)(highByte << 8 | lowByte);
             return Data;
@@ -143,7 +154,8 @@ namespace LA6502.CPU
         public void WriteByte(ref uint32 cycles, Memory memory, Word Address, byte Data)
         {
             memory[Address] = Data;
-            cycles--;
+
+            CycleTick(ref cycles);
         }
 
         // Zero Page Adressing Mode
@@ -159,7 +171,7 @@ namespace LA6502.CPU
             byte zeroPageAddress = FetchByte(ref cycles, memory);
             zeroPageAddress = (byte)(zeroPageAddress + X);
 
-            cycles--;
+            CycleTick(ref cycles);
 
             return zeroPageAddress;
         }
@@ -170,7 +182,7 @@ namespace LA6502.CPU
             byte zeroPageAddress = FetchByte(ref cycles, memory);
             zeroPageAddress = (byte)(zeroPageAddress + Y);
 
-            cycles--;
+            CycleTick(ref cycles);
 
             return zeroPageAddress;
         }
@@ -192,15 +204,16 @@ namespace LA6502.CPU
             // Check if the high byte has changed, indicating a page boundary crossing
             if ((address & 0xFF00) != originalHighByte)
             {
-                RequestAdditionalCycle(ref cycles);
+                RequestCycle(ref cycles);
+
                 // Decrement cycles if a page boundary was crossed
-                cycles--;
+                CycleTick(ref cycles);
             }
 
             // For instructions whose clock cycles don't vary
             if (!variableCycles)
             {
-                cycles--;
+                CycleTick(ref cycles);
             }
 
             return address;
@@ -216,14 +229,15 @@ namespace LA6502.CPU
             // Check if the high byte has changed, indicating a page boundary crossing
             if ((address & 0xFF00) != originalHighByte)
             {
-                RequestAdditionalCycle(ref cycles);
+                RequestCycle(ref cycles);
+
                 // Decrement cycles if a page boundary was crossed
-                cycles--;
+                CycleTick(ref cycles);
             }
 
             if (!variableCycles)
             {
-                cycles--;
+                CycleTick(ref cycles);
             }
 
             return address;
@@ -248,7 +262,7 @@ namespace LA6502.CPU
             Word zeroPageAddress = FetchByte(ref cycles, memory);
             zeroPageAddress = (byte)(zeroPageAddress + X);
 
-            cycles--;
+            CycleTick(ref cycles);
 
             // The absolute address we've gotten point to yet another address that holds the target data
             Word address = ReadWord(ref cycles, memory, zeroPageAddress);
@@ -269,14 +283,15 @@ namespace LA6502.CPU
             // Check if the high byte has changed, indicating a page boundary crossing
             if ((address & 0xFF00) != originalHighByte)
             {
-                RequestAdditionalCycle(ref cycles);
+                RequestCycle(ref cycles);
+
                 // Decrement cycles if a page boundary was crossed
-                cycles--;
+                CycleTick(ref cycles);
             }
 
             if (!variableCycles)
             {
-                cycles--;
+                CycleTick(ref cycles);
             }
 
             return address;
@@ -290,7 +305,7 @@ namespace LA6502.CPU
             var e = (sbyte)offset;
             Word address = (Word)(PC + (sbyte)offset);
 
-            cycles--;
+            CycleTick(ref cycles);
 
             return address;
         }
@@ -609,6 +624,60 @@ namespace LA6502.CPU
                             Word address = AddressAbsolute(ref cycles, memory);
                             byte data = Y;
                             WriteByte(ref cycles, memory, address, data);
+                        }
+                        break;
+
+                    // Transfer Accumulator to X Register
+                    case (byte)Opcodes.TAX:
+                        {
+                            X = A;
+                            CycleTick(ref cycles);
+                            SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    // Transfer Accumulator to Y Register
+                    case (byte)Opcodes.TAY:
+                        {
+                            Y = A;
+                            CycleTick(ref cycles);
+                            SetZeroAndNegativeFlags(Y);
+                        }
+                        break;
+
+                    // Transfer X to Accumulator Register
+                    case (byte)Opcodes.TXA:
+                        {
+                            A = X;
+                            CycleTick(ref cycles);
+                            SetZeroAndNegativeFlags(A);
+                        }
+                        break;
+
+                    // Transfer Y to Accumulator Register
+                    case (byte)Opcodes.TYA:
+                        {
+                            A = Y;
+                            CycleTick(ref cycles);
+                            SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    // Transfer Stack Pointer to X Register
+                    case (byte)Opcodes.TSX:
+                        {
+                            X = SP;
+                            CycleTick(ref cycles);
+                            SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    // Transfer X to Stack Pointer Register
+                    case (byte)Opcodes.TXS:
+                        {
+                            SP = X;
+                            CycleTick(ref cycles);
+                            SetZeroAndNegativeFlags(X);
                         }
                         break;
 
