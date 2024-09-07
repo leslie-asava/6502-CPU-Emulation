@@ -158,6 +158,24 @@ namespace LA6502.CPU
             CycleTick(ref cycles);
         }
 
+        // Push a byte onto the Stack and decrement the Stack Pointer
+        public void PushToStack(ref uint32 cycles, Memory memory, byte Data)
+        {
+            WriteByte(ref cycles, memory, (Word)(0x0100 + SP), Data);
+            SP--;
+            CycleTick(ref cycles);
+        }
+
+        // Pop a byte from the Stack and increment the Stack Pointer
+        public Byte PopFromStack(ref uint32 cycles, Memory memory)
+        {
+            Byte data = ReadByte(ref cycles, memory, (Word)(0x0100 + SP));
+            SP++;
+            CycleTick(ref cycles);
+
+            return data;
+        }
+
         // Zero Page Adressing Mode
         public byte AddressZeroPage(ref uint32 cycles, Memory memory)
         {
@@ -678,6 +696,40 @@ namespace LA6502.CPU
                             SP = X;
                             CycleTick(ref cycles);
                             SetZeroAndNegativeFlags(X);
+                        }
+                        break;
+
+                    // Push Accumulator
+                    case (byte)Opcodes.PHA:
+                        {
+                            Byte data = A;
+                            PushToStack(ref cycles, memory, data);
+                        }
+                        break;
+
+                    // Push Processor Status
+                    case (byte)Opcodes.PHP:
+                        {
+                            Byte data = StatusFlags;
+                            PushToStack(ref cycles, memory, data);
+                        }
+                        break;
+
+                    // Pull Accumulator
+                    case (byte)Opcodes.PLA:
+                        {
+                            Byte data = PopFromStack(ref cycles, memory);
+                            A = data;
+                            CycleTick(ref cycles);
+                        }
+                        break;
+
+                    // Pull Processor Status
+                    case (byte)Opcodes.PLP:
+                        {
+                            Byte data = PopFromStack(ref cycles, memory);
+                            StatusFlags = data;
+                            CycleTick(ref cycles);
                         }
                         break;
 

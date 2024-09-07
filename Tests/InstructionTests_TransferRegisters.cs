@@ -17,7 +17,7 @@ namespace CPUTests
         }
 
         [Test]
-        public void TAX_TransferAccumulatorToX()
+        public void TAX_TransferAccumulatorToXRegister()
         {
             Opcodes opcode = Opcodes.TAX;
             memory[0xFFFC] = (byte)opcode;
@@ -57,7 +57,7 @@ namespace CPUTests
         }
 
         [Test]
-        public void TAY_TransferAccumulatorToY()
+        public void TAY_TransferAccumulatorToYRegister()
         {
             Opcodes opcode = Opcodes.TAY;
             memory[0xFFFC] = (byte)opcode;

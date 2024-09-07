@@ -68,6 +68,10 @@ namespace LA6502.Types
         TSX = 0xBA,
         TXS = 0x9A,
         PHA = 0x48,
+        PHP = 0x08,
+        PLA = 0x68,
+        PLP = 0x28,
+
 
     }
 
@@ -125,6 +129,11 @@ namespace LA6502.Types
             
             { Opcodes.TSX, 2 },         // TSX Implied           
             { Opcodes.TXS, 2 },         // TXS Implied
+            { Opcodes.PHA, 3 },         // PHA Implied           
+            { Opcodes.PHP, 3 },         // PHP Implied
+            { Opcodes.PLA, 4 },         // PHA Implied           
+            { Opcodes.PLP, 4 },         // PHP Implied
+
         };
     }
 }
